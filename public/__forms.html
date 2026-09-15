@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8"><title>Form submissions</title></head>
+  <body>
+    <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="form-name" value="contact"><input name="bot-field">
+      <input name="name"><input name="email"><input name="phone"><input name="subject"><textarea name="message"></textarea>
+    </form>
+    <form name="admission-inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="form-name" value="admission-inquiry"><input name="bot-field">
+      <input name="name"><input name="email"><input name="phone"><input name="level"><textarea name="message"></textarea>
+    </form>
+    <form name="admission-application" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" hidden>
+      <input name="form-name" value="admission-application"><input name="bot-field">
+      <input name="applicant_name"><input name="guardian_name"><input name="email"><input name="phone"><input name="level">
+      <input name="start_date"><input name="previous_school"><textarea name="notes"></textarea><input type="file" name="document">
+    </form>
+  </body>
+</html>

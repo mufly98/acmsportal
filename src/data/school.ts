@@ -98,13 +98,6 @@ export const faculty: Faculty[] = [
     accent: 'from-sky-400 to-sky-600',
   },
   {
-    name: 'Mr. Moses Adadu',
-    role: 'Vice Principal Secondary Section',
-    bio: 'Experienced leader overseeing secondary academic programs and student welfare.',
-    initials: 'MA',
-    accent: 'from-emerald-400 to-emerald-600',
-  },
-  {
     name: 'Mr. Abubakar Bello',
     role: 'Vice Principal Primary Section & Admin',
     bio: 'Oversees primary section operations and school administration.',
@@ -120,8 +113,8 @@ export const faculty: Faculty[] = [
   },
   {
     name: 'Mrs. Fauziyya Ahmad Muhammad',
-    role: 'Head of Science Department',
-    bio: 'Focused on science excellence and laboratory innovation.',
+    role: 'Vice Principal Secondary Section & Head of Science Department',
+    bio: 'Oversees secondary academic programs, student welfare, science excellence, and laboratory innovation.',
     initials: 'FM',
     accent: 'from-rose-400 to-rose-600',
   },
@@ -148,7 +141,7 @@ export const faculty: Faculty[] = [
   },
 ];
 
-export const websiteUrl = 'https://acmsportal.com';
+export const websiteUrl = 'https://acmsportal.netlify.app';
 
 export const stats = [
   { value: '500+', label: 'Students' },
@@ -170,7 +163,7 @@ export const admissionSchedule = [
   { label: 'School Resumption', value: 'Monday, 7 September 2026' },
 ];
 
-export const resultsCheckerUrl = 'https://acmsportal.com';
+export const resultsCheckerUrl = 'https://acmsportal.netlify.app';
 
 export const contactInfo = {
   address: [
@@ -179,7 +172,7 @@ export const contactInfo = {
     'Zaria Road, Kano, Nigeria',
   ],
   phones: ['08023715680', '08149981369', '09049947917', '07069009799'],
-  website: 'https://acmsportal.com',
+  website: 'https://acmsportal.netlify.app',
   email: 'amfusmodelschool@gmail.com',
   hours: ['Monday - Friday: 8:00 AM - 2:00 PM', 'Saturday: 9:00 AM - 12:00 PM'],
 };

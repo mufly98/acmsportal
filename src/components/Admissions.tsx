@@ -10,11 +10,8 @@ import {
   ArrowRight,
   Search,
   Upload,
-  X,
   FileCheck2,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { sendFormEmail } from '@/lib/email';
 import {
   admissionRequirements,
   admissionSchedule,
@@ -40,7 +37,7 @@ const applicationLevels = [
   'SS 3',
 ];
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const ACCEPTED_TYPES = [
   'image/jpeg',
   'image/png',
@@ -48,12 +45,6 @@ const ACCEPTED_TYPES = [
   'application/pdf',
   'image/webp',
 ];
-
-type UploadedFile = {
-  file: File;
-  label: string;
-  url: string;
-};
 
 export default function Admissions() {
   const [tab, setTab] = useState<'inquiry' | 'application'>('inquiry');
@@ -82,73 +73,37 @@ export default function Admissions() {
   const [appStatus, setAppStatus] = useState<FormStatus>('idle');
 
   // File uploads
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     setUploadError(null);
-    setIsUploading(true);
-
-    const newFiles: UploadedFile[] = [];
-
-    for (const file of Array.from(files)) {
-      if (file.size > MAX_FILE_SIZE) {
-        setUploadError(`${file.name} is too large. Maximum size is 10 MB.`);
-        continue;
-      }
-      if (!ACCEPTED_TYPES.includes(file.type)) {
-        setUploadError(
-          `${file.name} is not a supported format. Please upload PDF, JPG, PNG, or WebP files.`,
-        );
-        continue;
-      }
-
-      const folder = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const path = `${folder}/${safeName}`;
-
-      const { error } = await supabase.storage
-        .from('application-files')
-        .upload(path, file);
-
-      if (error) {
-        setUploadError(`Failed to upload ${file.name}. Please try again.`);
-        continue;
-      }
-
-      const { data: urlData } = supabase.storage
-        .from('application-files')
-        .getPublicUrl(path);
-
-      newFiles.push({ file, label: file.name, url: urlData.publicUrl });
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError(`${file.name} is too large. Maximum size is 8 MB.`);
+      e.target.value = '';
+      return;
     }
-
-    setUploadedFiles((prev) => [...prev, ...newFiles]);
-    setIsUploading(false);
-    e.target.value = '';
-  };
-
-  const removeFile = (idx: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== idx));
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      setUploadError(`${file.name} is not a supported format. Please upload PDF, JPG, PNG, or WebP files.`);
+      e.target.value = '';
+      return;
+    }
+    setUploadedFile(file);
   };
 
   const handleInquiry = async (e: FormEvent) => {
     e.preventDefault();
     setInquiryStatus('submitting');
     try {
-      const { error } = await supabase.from('inquiries').insert({
-        name: inquiry.name,
-        email: inquiry.email,
-        phone: inquiry.phone,
-        level: inquiry.level,
-        message: inquiry.message,
+      const response = await fetch('/__forms.html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ 'form-name': 'admission-inquiry', ...inquiry }).toString(),
       });
-      if (error) throw error;
-      void sendFormEmail({ type: 'inquiry', data: inquiry });
+      if (!response.ok) throw new Error('Submission failed');
       setInquiryStatus('success');
       setInquiry({
         name: '',
@@ -166,27 +121,12 @@ export default function Admissions() {
     e.preventDefault();
     setAppStatus('submitting');
     try {
-      const { error } = await supabase.from('applications').insert({
-        applicant_name: application.applicant_name,
-        guardian_name: application.guardian_name,
-        email: application.email,
-        phone: application.phone,
-        level: application.level,
-        start_date: application.start_date,
-        previous_school: application.previous_school || null,
-        notes: application.notes || null,
+      const formData = new FormData(e.currentTarget as HTMLFormElement);
+      const response = await fetch('/__forms.html', {
+        method: 'POST',
+        body: formData,
       });
-      if (error) throw error;
-
-      const fileLinks = uploadedFiles.map((f) => ({
-        name: f.label,
-        url: f.url,
-      }));
-
-      void sendFormEmail({
-        type: 'application',
-        data: { ...application, files: fileLinks },
-      });
+      if (!response.ok) throw new Error('Submission failed');
       setAppStatus('success');
       setApplication({
         applicant_name: '',
@@ -198,7 +138,7 @@ export default function Admissions() {
         previous_school: '',
         notes: '',
       });
-      setUploadedFiles([]);
+      setUploadedFile(null);
     } catch {
       setAppStatus('error');
     }
@@ -322,7 +262,9 @@ export default function Admissions() {
 
           <div className="p-6 sm:p-10">
             {tab === 'inquiry' ? (
-              <form onSubmit={handleInquiry} className="space-y-5">
+              <form name="admission-inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={handleInquiry} className="space-y-5">
+                <input type="hidden" name="form-name" value="admission-inquiry" />
+                <p className="hidden" aria-hidden="true"><label>Leave this field empty <input name="bot-field" tabIndex={-1} autoComplete="off" /></label></p>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -330,6 +272,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="name"
                       type="text"
                       value={inquiry.name}
                       onChange={(e) =>
@@ -345,6 +288,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="email"
                       type="email"
                       value={inquiry.email}
                       onChange={(e) =>
@@ -362,6 +306,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="phone"
                       type="tel"
                       value={inquiry.phone}
                       onChange={(e) =>
@@ -376,6 +321,7 @@ export default function Admissions() {
                       Class of Interest
                     </label>
                     <select
+                      name="level"
                       value={inquiry.level}
                       onChange={(e) =>
                         setInquiry({ ...inquiry, level: e.target.value })
@@ -396,6 +342,7 @@ export default function Admissions() {
                   </label>
                   <textarea
                     required
+                    name="message"
                     rows={4}
                     value={inquiry.message}
                     onChange={(e) =>
@@ -427,7 +374,9 @@ export default function Admissions() {
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleApplication} className="space-y-5">
+              <form name="admission-application" method="POST" data-netlify="true" netlify-honeypot="bot-field" encType="multipart/form-data" onSubmit={handleApplication} className="space-y-5">
+                <input type="hidden" name="form-name" value="admission-application" />
+                <p className="hidden" aria-hidden="true"><label>Leave this field empty <input name="bot-field" tabIndex={-1} autoComplete="off" /></label></p>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -435,6 +384,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="applicant_name"
                       type="text"
                       value={application.applicant_name}
                       onChange={(e) =>
@@ -453,6 +403,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="guardian_name"
                       type="text"
                       value={application.guardian_name}
                       onChange={(e) =>
@@ -473,6 +424,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="email"
                       type="email"
                       value={application.email}
                       onChange={(e) =>
@@ -491,6 +443,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="phone"
                       type="tel"
                       value={application.phone}
                       onChange={(e) =>
@@ -510,6 +463,7 @@ export default function Admissions() {
                       Desired Class
                     </label>
                     <select
+                      name="level"
                       value={application.level}
                       onChange={(e) =>
                         setApplication({
@@ -532,6 +486,7 @@ export default function Admissions() {
                     </label>
                     <input
                       required
+                      name="start_date"
                       type="date"
                       value={application.start_date}
                       onChange={(e) =>
@@ -550,6 +505,7 @@ export default function Admissions() {
                   </label>
                   <input
                     type="text"
+                    name="previous_school"
                     value={application.previous_school}
                     onChange={(e) =>
                       setApplication({
@@ -566,6 +522,7 @@ export default function Admissions() {
                     Additional Notes (optional)
                   </label>
                   <textarea
+                    name="notes"
                     rows={3}
                     value={application.notes}
                     onChange={(e) =>
@@ -583,39 +540,22 @@ export default function Admissions() {
                   </label>
                   <p className="mb-3 text-xs text-slate-500">
                     Upload birth certificate, transcripts, medical certificate,
-                    passport photos, etc. Accepted: PDF, JPG, PNG, WebP. Max 10
-                    MB per file.
+                    passport photo, or transcript. Accepted: PDF, JPG, PNG,
+                    WebP. One file, maximum 8 MB.
                   </p>
 
                   <label
-                    className={`flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-8 transition-colors ${isUploading
-                        ? 'border-brand-400 bg-brand-50/50'
-                        : 'border-slate-300 bg-stone-50 hover:border-brand-400 hover:bg-brand-50/30'
-                      }`}
+                    className="flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 bg-stone-50 px-4 py-8 transition-colors hover:border-brand-400 hover:bg-brand-50/30"
                   >
                     <input
                       type="file"
-                      multiple
+                      name="document"
                       accept=".pdf,.jpg,.jpeg,.png,.webp"
                       onChange={handleFileSelect}
-                      disabled={isUploading}
                       className="hidden"
                     />
-                    {isUploading ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin text-brand-600" />
-                        <span className="text-sm font-medium text-brand-700">
-                          Uploading...
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-5 w-5 text-brand-600" />
-                        <span className="text-sm font-medium text-slate-700">
-                          Click to upload documents
-                        </span>
-                      </>
-                    )}
+                    <Upload className="h-5 w-5 text-brand-600" />
+                    <span className="text-sm font-medium text-slate-700">Choose a document</span>
                   </label>
 
                   {uploadError && (
@@ -625,29 +565,11 @@ export default function Admissions() {
                     </div>
                   )}
 
-                  {uploadedFiles.length > 0 && (
-                    <ul className="mt-3 space-y-2">
-                      {uploadedFiles.map((f, idx) => (
-                        <li
-                          key={idx}
-                          className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2.5"
-                        >
-                          <div className="flex items-center gap-2.5 overflow-hidden">
-                            <FileCheck2 className="h-4 w-4 shrink-0 text-emerald-600" />
-                            <span className="truncate text-sm font-medium text-slate-700">
-                              {f.label}
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeFile(idx)}
-                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                  {uploadedFile && (
+                    <div className="mt-3 flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+                      <FileCheck2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                      <span className="truncate text-sm font-medium text-slate-700">{uploadedFile.name}</span>
+                    </div>
                   )}
                 </div>
 

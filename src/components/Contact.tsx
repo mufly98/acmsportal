@@ -9,8 +9,6 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { sendFormEmail } from '@/lib/email';
 import { contactInfo } from '@/data/school';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
@@ -29,15 +27,15 @@ export default function Contact() {
     e.preventDefault();
     setStatus('submitting');
     try {
-      const { error } = await supabase.from('contact_messages').insert({
-        name: form.name,
-        email: form.email,
-        phone: form.phone || null,
-        subject: form.subject,
-        message: form.message,
+      const response = await fetch('/__forms.html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          'form-name': 'contact',
+          ...form,
+        }).toString(),
       });
-      if (error) throw error;
-      void sendFormEmail({ type: 'contact', data: form });
+      if (!response.ok) throw new Error('Submission failed');
       setStatus('success');
       setForm({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch {
@@ -137,9 +135,17 @@ export default function Contact() {
           {/* Form */}
           <div className="reveal lg:col-span-3" style={{ transitionDelay: '0.1s' }}>
             <form
+              name="contact"
+              method="POST"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
               onSubmit={handleSubmit}
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8"
             >
+              <input type="hidden" name="form-name" value="contact" />
+              <p className="hidden" aria-hidden="true">
+                <label>Leave this field empty <input name="bot-field" tabIndex={-1} autoComplete="off" /></label>
+              </p>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -147,6 +153,7 @@ export default function Contact() {
                   </label>
                   <input
                     required
+                    name="name"
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -160,6 +167,7 @@ export default function Contact() {
                   </label>
                   <input
                     required
+                    name="email"
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -175,6 +183,7 @@ export default function Contact() {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                     className="input-field"
@@ -187,6 +196,7 @@ export default function Contact() {
                   </label>
                   <input
                     required
+                    name="subject"
                     type="text"
                     value={form.subject}
                     onChange={(e) =>
@@ -203,6 +213,7 @@ export default function Contact() {
                 </label>
                 <textarea
                   required
+                  name="message"
                   rows={5}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
