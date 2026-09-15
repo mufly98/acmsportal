@@ -85,8 +85,8 @@ export const faculty: Faculty[] = [
   },
   {
     name: 'Mr. Muhammad Farouk Yola',
-    role: 'Digital Technologist & Chief Executive Officer',
-    bio: 'Drives technology initiatives and oversees the overall management and direction of the school.',
+    role: 'Digital Technologist',
+    bio: 'Drives technology initiatives and supports the school’s digital development.',
     initials: 'MY',
     accent: 'from-cyan-400 to-cyan-600',
   },
@@ -159,7 +159,7 @@ export const admissionRequirements = [
 ];
 
 export const admissionSchedule = [
-  { label: 'Application Period', value: 'Before or beginning of term' },
+  { label: 'Application Period', value: 'Admissions Closed' },
   { label: 'School Resumption', value: 'Monday, 7 September 2026' },
 ];
 
