@@ -85,8 +85,8 @@ export const faculty: Faculty[] = [
   },
   {
     name: 'Mr. Muhammad Farouk Yola',
-    role: 'Digital Technologist & Chief Executive Officer',
-    bio: 'Drives technology initiatives and oversees the overall management and direction of the school.',
+    role: 'Digital Technologist',
+    bio: 'Drives technology initiatives and digital innovation across the school.',
     initials: 'MY',
     accent: 'from-cyan-400 to-cyan-600',
   },
@@ -98,10 +98,10 @@ export const faculty: Faculty[] = [
     accent: 'from-sky-400 to-sky-600',
   },
   {
-    name: 'Mr. Moses Adadu',
+    name: 'Mrs. Fauziyya Ahmad Muhammad',
     role: 'Vice Principal Secondary Section',
     bio: 'Experienced leader overseeing secondary academic programs and student welfare.',
-    initials: 'MA',
+    initials: 'FM',
     accent: 'from-emerald-400 to-emerald-600',
   },
   {
@@ -113,16 +113,30 @@ export const faculty: Faculty[] = [
   },
   {
     name: 'Mrs. Fatima Muhammad Mutawakkil',
-    role: 'School Superintendent & Head of Tahfeez Section & Accountant',
-    bio: 'Oversees school standards and leads the Tahfeez Quran memorization program.',
+    role: 'School Superintendent',
+    bio: 'Oversees school standards, conduct, and the overall welfare of students.',
     initials: 'FM',
     accent: 'from-pink-400 to-pink-600',
   },
   {
-    name: 'Mrs. Fauziyya Ahmad Muhammad',
+    name: 'Mr. Gabriel Butè',
+    role: 'Sectional Head Secondary Section',
+    bio: 'Coordinates day-to-day academic activities and discipline in the secondary section.',
+    initials: 'GB',
+    accent: 'from-indigo-400 to-indigo-600',
+  },
+  {
+    name: 'Mr. Almustapha Muhammad',
+    role: 'Sectional Head Primary Section',
+    bio: 'Coordinates day-to-day learning and pupil welfare in the primary section.',
+    initials: 'AM',
+    accent: 'from-lime-400 to-lime-600',
+  },
+  {
+    name: 'Mrs. Farida Zango',
     role: 'Head of Science Department',
     bio: 'Focused on science excellence and laboratory innovation.',
-    initials: 'FM',
+    initials: 'FZ',
     accent: 'from-rose-400 to-rose-600',
   },
   {
@@ -131,6 +145,13 @@ export const faculty: Faculty[] = [
     bio: 'Committed to strong language and literacy development.',
     initials: 'DO',
     accent: 'from-teal-400 to-teal-600',
+  },
+  {
+    name: 'Mrs. Hassana Ahmad Wakeel',
+    role: 'Head of Islamic Department',
+    bio: 'Leads Islamic studies with a focus on faith, character, and moral upbringing.',
+    initials: 'HW',
+    accent: 'from-fuchsia-400 to-fuchsia-600',
   },
   {
     name: 'Malam Naziru Muhammad Musa',
