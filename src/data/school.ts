@@ -162,7 +162,7 @@ export const faculty: Faculty[] = [
   },
 ];
 
-export const websiteUrl = 'https://acmsportal.com';
+export const websiteUrl = 'https://acms.netlify.app';
 
 export const stats = [
   { value: '500+', label: 'Students' },
@@ -184,7 +184,7 @@ export const admissionSchedule = [
   { label: 'School Resumption', value: 'Monday, 7 September 2026' },
 ];
 
-export const resultsCheckerUrl = 'https://acmsportal.com';
+export const resultsCheckerUrl = 'https://acms.netlify.app';
 
 export const contactInfo = {
   address: [
@@ -193,7 +193,7 @@ export const contactInfo = {
     'Zaria Road, Kano, Nigeria',
   ],
   phones: ['08023715680', '08149981369', '09049947917', '07069009799'],
-  website: 'https://acmsportal.com',
+  website: 'https://acms.netlify.app',
   email: 'amfusmodelschool@gmail.com',
   hours: ['Monday - Friday: 8:00 AM - 2:00 PM', 'Saturday: 9:00 AM - 12:00 PM'],
 };
