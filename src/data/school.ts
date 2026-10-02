@@ -98,10 +98,10 @@ export const faculty: Faculty[] = [
     accent: 'from-sky-400 to-sky-600',
   },
   {
-    name: 'Mr. Moses Adadu',
+    name: 'Mrs. Fauziyya Ahmad Muhammad',
     role: 'Vice Principal Secondary Section',
     bio: 'Experienced leader overseeing secondary academic programs and student welfare.',
-    initials: 'MA',
+    initials: 'FM',
     accent: 'from-emerald-400 to-emerald-600',
   },
   {
@@ -113,17 +113,31 @@ export const faculty: Faculty[] = [
   },
   {
     name: 'Mrs. Fatima Muhammad Mutawakkil',
-    role: 'School Superintendent & Head of Tahfeez Section & Accountant',
-    bio: 'Oversees school standards and leads the Tahfeez Quran memorization program.',
+    role: 'School Superintendent',
+    bio: 'Oversees school standards, discipline and the overall quality of school life.',
     initials: 'FM',
     accent: 'from-pink-400 to-pink-600',
   },
   {
-    name: 'Mrs. Fauziyya Ahmad Muhammad',
+    name: 'Mrs. Farida Zango',
     role: 'Head of Science Department',
     bio: 'Focused on science excellence and laboratory innovation.',
-    initials: 'FM',
+    initials: 'FZ',
     accent: 'from-rose-400 to-rose-600',
+  },
+  {
+    name: 'Mrs. Hassana Ahmad Wakeel',
+    role: 'Head of Islamic Department',
+    bio: 'Guides Islamic studies with a focus on knowledge, faith and good character.',
+    initials: 'HW',
+    accent: 'from-indigo-400 to-indigo-600',
+  },
+  {
+    name: 'Mr. Gabriel Butè',
+    role: 'Sectional Head Secondary Section',
+    bio: 'Supports the day-to-day running of the secondary section and student progress.',
+    initials: 'GB',
+    accent: 'from-amber-400 to-amber-600',
   },
   {
     name: 'Mrs. Dorcas Oloruwanti',
